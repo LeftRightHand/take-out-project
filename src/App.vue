@@ -27,24 +27,16 @@ export default {
   },
   created() {
     this._getSeller();
-    this._getGoodsList()
   },
   methods: {
     _getSeller() {
       getSeller().then((res)=>{
         if (res.error == ERR_OK) {
           this.seller = res.data;
-          console.log(res.data)
         }
       })
     },
-    _getGoodsList() {
-      getGoodsList().then((res)=>{
-        if (res.error == ERR_OK) {
-          console.log(res.data)
-        }
-      })
-    }
+
   }
 }
 </script>

@@ -68,7 +68,10 @@
 </template>
 
 <script>
+
     import Star from "../star/star";
+    import {iconNameList} from "../../common/js/const"
+    const iconName = iconNameList();
 
     export default {
       components: {Star},
@@ -85,7 +88,7 @@
           }
         },
         created() {
-          this.classMap = ['decrease', 'discount', 'guarantee', 'invoice', 'special']
+          this.classMap = iconName
         },
         methods: {
           showDetail() {
