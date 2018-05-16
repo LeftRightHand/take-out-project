@@ -1,18 +1,21 @@
 <template>
   <div class="goods">
-    <div class="menu-wrapper">
+    <div class="menu-wrapper" ref="menuWrapper">
       <ul>
-        <li v-for="item in goods" class="menu-item">
+        <li v-for="(item, index) in goods"
+            class="menu-item"
+            :class="{'current':currentIndex === index}"
+            @click="selectMenu(index)" ref="menuItem">
           <span class="text border-1px">
             <span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span>
-            <span>{{item.name}}</span>
+            <span >{{item.name}}</span>
           </span>
         </li>
       </ul>
     </div>
-    <div class="foods-wrapper">
+    <div class="foods-wrapper" ref="foodsWrapper">
       <ul>
-        <li v-for="item in goods" class="food-list">
+        <li v-for="item in goods" class="food-list" ref="foodsGroup">
           <h1 class="title">{{item.name}}</h1>
           <ul>
             <li v-for="food in item.foods" class="food-item border-1px">
@@ -27,7 +30,7 @@
                   <span>好评率{{food.rating}}%</span>
                 </div>
                 <div class="price">
-                  <span class="new">¥{{food.price}}</span>
+                  <span class="now">¥{{food.price}}</span>
                   <span class="old" v-show="food.oldPrice">¥{{food.oldPrice}}</span>
                 </div>
               </div>
@@ -36,18 +39,22 @@
         </li>
       </ul>
     </div>
+    <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 
 <script>
 
+  import BScroll from 'better-scroll'
   import {getGoodsList} from "../../api/goods";
   import {ERR_OK} from "../../api/config";
   import {iconNameList} from "../../common/js/const"
+  import Shopcart from "../../components/shopcart/shopcart";
 
   const iconName = iconNameList();
 
   export default {
+    components: {Shopcart},
     name: "goods",
     props: {
       seller:{
@@ -56,11 +63,22 @@
     },
     data() {
       return {
-        goods:[]
+        goods:[],
+        listHeigth:[],
+        scrollY:0
       }
     },
     computed: {
-
+      currentIndex() {
+        for (let i = 0; i < this.listHeigth.length; i++) {
+          let height1 = this.listHeigth[i];
+          let height2 = this.listHeigth[i+1];
+          if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+              return i;
+          }
+        }
+        return 0;
+      }
     },
     created() {
       this.classMap = iconName;
@@ -68,15 +86,46 @@
       this._getGoodsList()
     },
     methods:{
-        _getGoodsList() {
-          getGoodsList().then((res)=>{
-            if (res.error == ERR_OK) {
-              this.goods = res.data
-            }
-          })
+      selectMenu(index) {
+        console.log(index);
+        let foodList = this.$refs.foodsGroup;
+        let el = foodList[index];
+        this.foodScroll.scrollToElement(el, 300);
+      },
+      _getGoodsList() {
+        getGoodsList().then((res)=>{
+          if (res.error == ERR_OK) {
+            this.goods = res.data
+            this.$nextTick(()=>{
+              this._initScroll();
+              this._calulateHeight()
+            });
+          }
+        })
+      },
+      _initScroll() {
+        this.menuScroll = new BScroll(this.$refs.menuWrapper, {
+          click: true
+        });
+        this.foodScroll = new BScroll(this.$refs.foodsWrapper,{
+          probeType: 3
+        })
+        this.foodScroll.on('scroll', (pos)=>{
+          this.scrollY = Math.round(Math.abs(pos.y))
+        })
+      },
+      _calulateHeight() {
+        let foodList = this.$refs.foodsGroup
+        let height = 0;
+        this.listHeigth.push(height);
+        for (let i = 0; i < foodList.length; i++) {
+          let item = foodList[i];
+          height += item.clientHeight;
+          this.listHeigth.push(height)
         }
+      }
     }
-    }
+  }
 
 </script>
 
@@ -101,12 +150,15 @@
         width 56px
         line-height 14px
         padding 0 12px
+        &.current
+          background white
         .text
           display table-cell
           width 56px
           vertical-align middle
           font-size 12px
           line-height 14px
+          font-weight 200
           border-1px (rgba(7,17,27,0.1))
         .icon
           display inline-block
@@ -154,23 +206,27 @@
             height 14px
             line-height 14px
             font-size 14px
+            font-weight bold
             color rgb(7, 17, 27)
           .desc, .extra
-            line-height 10px
-            font-size 10px
+            line-height 8px
+            font-size 8px
             color rgb(147, 153, 159)
           .desc
+            line-height 14px
             margin-bottom 8px
           .extra
-            &.count
-              margin-right 12p
+            .count
+              margin-right 14p
           .price
             font-weight 700
             line-height 24px
-            .new
+            .now
               margin-right 8px
               font-size 14px
               color rgb(240, 20, 20)
-
-
+            .old
+              text-decoration line-through
+              font-size 14px
+              color rgb(147, 153, 159)
 </style>
