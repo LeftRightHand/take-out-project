@@ -26,13 +26,14 @@
             this.food.count--
           }
         },
-        addCart() {
+        addCart(e) {
           console.log('click')
           if (!this.food.count) {
             vue.set(this.food, 'count', 1)
           } else {
             this.food.count++
           }
+          this.$emit('cart-add', e.target)
         }
       }
     }
