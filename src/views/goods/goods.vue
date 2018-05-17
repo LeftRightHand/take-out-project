@@ -33,13 +33,16 @@
                   <span class="now">¥{{food.price}}</span>
                   <span class="old" v-show="food.oldPrice">¥{{food.oldPrice}}</span>
                 </div>
+                <div class="cartcontrol-wrapper">
+                  <cartcontrol :food="food"></cartcontrol>
+                </div>
               </div>
             </li>
           </ul>
         </li>
       </ul>
     </div>
-    <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+    <shopcart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 
@@ -50,11 +53,14 @@
   import {ERR_OK} from "../../api/config";
   import {iconNameList} from "../../common/js/const"
   import Shopcart from "../../components/shopcart/shopcart";
+  import Cartcontrol from "../../components/cartcontrol/cartcontrol";
 
   const iconName = iconNameList();
 
   export default {
-    components: {Shopcart},
+    components: {
+      Cartcontrol,
+      Shopcart},
     name: "goods",
     props: {
       seller:{
@@ -78,6 +84,17 @@
           }
         }
         return 0;
+      },
+      selectFoods() {
+        let foods = [];
+        this.goods.forEach((good)=>{
+          good.foods.forEach((food)=>{
+            if (food.count) {
+              foods.push(food)
+            }
+          })
+        })
+        return foods
       }
     },
     created() {
@@ -108,7 +125,8 @@
           click: true
         });
         this.foodScroll = new BScroll(this.$refs.foodsWrapper,{
-          probeType: 3
+          probeType: 3,
+          click: true
         })
         this.foodScroll.on('scroll', (pos)=>{
           this.scrollY = Math.round(Math.abs(pos.y))
@@ -229,4 +247,8 @@
               text-decoration line-through
               font-size 14px
               color rgb(147, 153, 159)
+          .cartcontrol-wrapper
+            position absolute
+            right 0
+            bottom 12px
 </style>
