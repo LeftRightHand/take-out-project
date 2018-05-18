@@ -54,7 +54,6 @@
       <div class="show-mask" v-show="listShow" @click="toggleList"></div>
     </transition>
   </div>
-
 </template>
 
 <script>
