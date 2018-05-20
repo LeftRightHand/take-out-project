@@ -7,7 +7,9 @@
             <div class="logo" :class="{'hightlight':totalCount>0}">
               <span class="icon-shopping_cart" :class="{'hightlight':totalCount>0}"></span>
             </div>
-            <div v-show="totalCount>0" class="num">{{totalCount}}</div>
+            <div v-show="totalCount>0" class="num">
+              <p>{{totalCount}}</p>
+            </div>
           </div>
           <div class="price" :class="{'hightlight':totalPrice>0}">¥{{totalPrice}}元</div>
           <div class="desc">另需配送费¥{{deliveryPrice}}元</div>
@@ -275,7 +277,6 @@
             position absolute
             top 0
             right 0
-            width 24px
             height 16px
             line-height 16px
             text-align center
@@ -283,6 +284,7 @@
             font-size 9px
             background rgb(240,20,20)
             color white
+            padding 0 5px
         .price
           display inline-block
           vertical-align top

@@ -15,6 +15,18 @@ const Goods = ((resolve)=>{
   })
 });
 
+const Food = ((resolve)=>{
+  import('@/views/food/food').then((module)=>{
+    resolve(module)
+  })
+});
+
+const Comment = ((resolve)=>{
+  import('@/views/comment/comment').then((module)=>{
+    resolve(module)
+  })
+});
+
 export default new Router({
   routes: [
     {
@@ -29,7 +41,17 @@ export default new Router({
     {
       path: '/goods',
       name: 'Goods',
-      component: Goods
+      component: Goods,
+      children:[
+        {
+          path:'detail',
+          component:Food
+        }
+      ]
+    },
+    {
+      path: '/comment',
+      component: Comment
     }
   ]
 })

@@ -2,7 +2,9 @@
   <div>
     <n-header :seller="seller"></n-header>
     <tab></tab>
-    <router-view :seller="seller"></router-view>
+    <keep-alive>
+      <router-view :seller="seller"></router-view>
+    </keep-alive>
   </div>
 </template>
 
@@ -10,7 +12,7 @@
 
 import NHeader from 'components/header/n-header'
 import Tab from "./components/tab/tab";
-import {getGoodsList, getSeller} from "./api/goods";
+import {getSeller} from "./api/goods";
 import {ERR_OK} from "./api/config";
 
 export default {

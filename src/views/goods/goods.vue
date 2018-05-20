@@ -1,52 +1,53 @@
 <template>
-  <div class="goods">
-    <div class="menu-wrapper" ref="menuWrapper">
-      <ul>
-        <li v-for="(item, index) in goods"
-            class="menu-item"
-            :class="{'current':currentIndex === index}"
-            @click="selectMenu(index)" ref="menuItem">
+    <div class="goods">
+      <div class="menu-wrapper" ref="menuWrapper">
+        <ul>
+          <li v-for="(item, index) in goods"
+              class="menu-item"
+              :class="{'current':currentIndex === index}"
+              @click="selectMenu(index)" ref="menuItem">
           <span class="text border-1px">
             <span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span>
             <span >{{item.name}}</span>
           </span>
-        </li>
-      </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="foods-wrapper" ref="foodsWrapper">
+        <ul>
+          <li v-for="item in goods" class="food-list" ref="foodsGroup">
+            <h1 class="title">{{item.name}}</h1>
+            <ul>
+              <li @click="selectItem(food)" v-for="food in item.foods" class="food-item border-1px">
+                <div class="icon">
+                  <img width="57" height="57" :src="food.icon">
+                </div>
+                <div class="content">
+                  <h2 class="name">{{food.name}}</h2>
+                  <p class="desc" v-text="food.description"></p>
+                  <div class="extra">
+                    <span class="count">月售{{food.sellCount}}份</span>
+                    <span>好评率{{food.rating}}%</span>
+                  </div>
+                  <div class="price">
+                    <span class="now">¥{{food.price}}</span>
+                    <span class="old" v-show="food.oldPrice">¥{{food.oldPrice}}</span>
+                  </div>
+                  <div class="cartcontrol-wrapper">
+                    <cartcontrol @cart-add="cartAdd" :food="food"></cartcontrol>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <shopcart :select-foods="selectFoods"
+                :delivery-price="seller.deliveryPrice"
+                :min-price="seller.minPrice" ref="shopcart">
+      </shopcart>
+      <router-view></router-view>
     </div>
-    <div class="foods-wrapper" ref="foodsWrapper">
-      <ul>
-        <li v-for="item in goods" class="food-list" ref="foodsGroup">
-          <h1 class="title">{{item.name}}</h1>
-          <ul>
-            <li v-for="food in item.foods" class="food-item border-1px">
-              <div class="icon">
-                <img width="57" height="57" :src="food.icon">
-              </div>
-              <div class="content">
-                <h2 class="name">{{food.name}}</h2>
-                <p class="desc" v-text="food.description"></p>
-                <div class="extra">
-                  <span class="count">月售{{food.sellCount}}份</span>
-                  <span>好评率{{food.rating}}%</span>
-                </div>
-                <div class="price">
-                  <span class="now">¥{{food.price}}</span>
-                  <span class="old" v-show="food.oldPrice">¥{{food.oldPrice}}</span>
-                </div>
-                <div class="cartcontrol-wrapper">
-                  <cartcontrol @cart-add="cartAdd" :food="food"></cartcontrol>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-    <shopcart :select-foods="selectFoods"
-              :delivery-price="seller.deliveryPrice"
-              :min-price="seller.minPrice" ref="shopcart">
-    </shopcart>
-  </div>
 </template>
 
 <script>
@@ -57,11 +58,14 @@
   import {iconNameList} from "../../common/js/const"
   import Shopcart from "../../components/shopcart/shopcart";
   import Cartcontrol from "../../components/cartcontrol/cartcontrol";
+  import Food from "../food/food";
+  import {mapMutations} from 'vuex'
 
   const iconName = iconNameList();
 
   export default {
     components: {
+      Food,
       Cartcontrol,
       Shopcart},
     name: "goods",
@@ -96,7 +100,7 @@
               foods.push(food)
             }
           })
-        })
+        });
         return foods
       }
     },
@@ -106,6 +110,12 @@
       this._getGoodsList()
     },
     methods:{
+      selectItem(item) {
+        this.$router.push({
+          path: '/goods/detail'
+        })
+        this.setFood(item)
+      },
       cartAdd(target) {
         this.$refs.shopcart.drop(target)
       },
@@ -147,7 +157,10 @@
           height += item.clientHeight;
           this.listHeigth.push(height)
         }
-      }
+      },
+      ...mapMutations({
+        setFood: 'SET_FOOD'
+      })
     },
   }
 

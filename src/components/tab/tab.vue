@@ -3,7 +3,7 @@
     <router-link tag="div" class="tab-item" to="/goods">
       <span class="tab-link">商品</span>
     </router-link>
-    <router-link tag="div" class="tab-item" to="/singer">
+    <router-link tag="div" class="tab-item" to="/comment">
       <span class="tab-link">评论</span>
     </router-link>
     <router-link tag="div" class="tab-item" to="/rank">
