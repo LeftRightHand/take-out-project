@@ -61,6 +61,7 @@
 <script>
     import Cartcontrol from "../cartcontrol/cartcontrol";
     import BScroll from "better-scroll"
+    import {mapMutations} from 'vuex'
 
     export default {
       components: {Cartcontrol},
@@ -226,7 +227,7 @@
             ball.show = false;
             el.style.display = 'none'; //隐藏小球
           }
-        }
+        },
       }
     }
 </script>

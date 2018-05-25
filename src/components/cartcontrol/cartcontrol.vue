@@ -34,7 +34,7 @@
             this.food.count++
           }
           this.$emit('cart-add', e.target)
-        }
+        },
       }
     }
 </script>

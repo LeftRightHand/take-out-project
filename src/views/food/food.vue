@@ -1,6 +1,6 @@
 <template>
   <transition name="slide">
-    <div class="food">
+    <div class="food" @click="back">
       <img :src="food.image">
     </div>
   </transition>
@@ -26,6 +26,9 @@
       ])
     },
     methods: {
+      back() {
+        this.$router.back()
+      },
       show() {
         this.showFlag = true
       }

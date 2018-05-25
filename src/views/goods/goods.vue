@@ -41,6 +41,9 @@
             </ul>
           </li>
         </ul>
+        <div class="list-fixed" ref="fixed" v-show="fixedTitle">
+          <h1 class="fixed-title">{{fixedTitle}}</h1>
+        </div>
       </div>
       <shopcart :select-foods="selectFoods"
                 :delivery-price="seller.deliveryPrice"
@@ -63,6 +66,8 @@
 
   const iconName = iconNameList();
 
+  const TILTLE_HEIGHT = 25;
+
   export default {
     components: {
       Food,
@@ -76,18 +81,36 @@
     },
     data() {
       return {
-        goods:[],
+        goods: [],
         listHeigth:[],
-        scrollY:0
+        scrollY: 0,
+        diff: -1
       }
     },
+    watch: {
+      diff(newVal) {
+        let fixedTop = (newVal > 0 && newVal < TILTLE_HEIGHT) ? newVal - TILTLE_HEIGHT : 0
+        if (this.fixedTop === fixedTop) {
+          return
+        }
+        this.fixedTop = fixedTop
+        this.$refs.fixed.style.transform = `translate3d(0,${fixedTop}px,0)`
+      },
+    },
     computed: {
+      fixedTitle() {
+        if (this.scrollY > 0) {
+          return ''
+        }
+        return this.goods[this.currentIndex] ? this.goods[this.currentIndex].name : ""
+      },
       currentIndex() {
         for (let i = 0; i < this.listHeigth.length; i++) {
           let height1 = this.listHeigth[i];
           let height2 = this.listHeigth[i+1];
-          if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
-              return i;
+          if (!height2 || (-this.scrollY >= height1 && -this.scrollY < height2)) {
+            this.diff = height2 + this.scrollY;
+            return i;
           }
         }
         return 0;
@@ -145,7 +168,7 @@
           click: true
         })
         this.foodScroll.on('scroll', (pos)=>{
-          this.scrollY = Math.round(Math.abs(pos.y))
+          this.scrollY = pos.y
         })
       },
       _calulateHeight() {
@@ -270,4 +293,17 @@
             position absolute
             right 0
             bottom 12px
+    .list-fixed
+      position absolute
+      top -1px
+      left 80px
+      width 100%
+      .fixed-title
+        padding-left 14px
+        height 26px
+        line-height 26px
+        border-left 2px solid #d9dde1
+        font-size 12px
+        color rgb(147, 153, 159)
+        background #f3f5f7
 </style>
